@@ -1,0 +1,852 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>body{margin:0}</style>
+<title>El Barrio que se Transforma</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: a la izquierda, la tarjeta de cada diapositiva; a la derecha, un barrio ilustrado que empieza gris y se va pintando a medida que avanza la exposición. Azul = participación, naranja = compromiso. */
+:root{
+  --bg:#F1F0EC; --surface:#FFFFFF; --surface-2:#F6F5F2; --ink:#1B2433; --ink-2:#3E4858; --muted:#687180; --line:#DDDAD3;
+  --part:#2F5D8A; --part-soft:#E2EAF2; --part-ink:#244B71;
+  --comp:#B5722A; --comp-soft:#F4E9DA; --comp-ink:#87531A;
+  --none:#9CA3AC; --none-soft:#E8E7E3; --good:#3C7A5B; --bad:#A9473A; --on-accent:#FFFFFF;
+  --shadow:0 1px 2px rgba(27,36,51,.06),0 18px 40px -18px rgba(27,36,51,.25);
+  --display:"Bricolage Grotesque","Avenir Next","Segoe UI",system-ui,sans-serif;
+  --body:"Nunito Sans","Segoe UI",system-ui,-apple-system,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --ease:cubic-bezier(.2,.7,.2,1);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12161D; --surface:#1A2029; --surface-2:#212834; --ink:#E8ECF1; --ink-2:#C1C8D2; --muted:#8E97A3; --line:#2C3440;
+  --part:#86AED6; --part-soft:#1C2B3B; --part-ink:#AFCBE6;
+  --comp:#DDA562; --comp-soft:#352818; --comp-ink:#EBC38E;
+  --none:#6D7480; --none-soft:#262C36; --good:#6DB892; --bad:#E07F70; --on-accent:#12161D;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 18px 40px -18px rgba(0,0,0,.7); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12161D; --surface:#1A2029; --surface-2:#212834; --ink:#E8ECF1; --ink-2:#C1C8D2; --muted:#8E97A3; --line:#2C3440;
+  --part:#86AED6; --part-soft:#1C2B3B; --part-ink:#AFCBE6;
+  --comp:#DDA562; --comp-soft:#352818; --comp-ink:#EBC38E;
+  --none:#6D7480; --none-soft:#262C36; --good:#6DB892; --bad:#E07F70; --on-accent:#12161D;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 18px 40px -18px rgba(0,0,0,.7); color-scheme:dark}
+
+[hidden]{display:none!important}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;overflow:hidden;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+:focus-visible{outline:2px solid var(--part);outline-offset:3px;border-radius:8px}
+h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance;letter-spacing:-.025em;line-height:1.02}
+p{margin:0} ul,ol{margin:0;padding:0;list-style:none}
+.p{color:var(--part)} .c{color:var(--comp)}
+svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* ---------- shell ---------- */
+.app{position:fixed;inset:0;display:grid;grid-template-rows:auto 1fr auto auto}
+.topbar{display:flex;align-items:center;gap:14px;padding:calc(10px + env(safe-area-inset-top,0px)) clamp(16px,3vw,28px) 10px;border-bottom:1px solid var(--line);background:var(--bg);z-index:20}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:800;font-size:17px;white-space:nowrap}
+.mark{width:30px;height:30px;border-radius:9px;background:var(--ink);display:grid;place-items:center}
+.where{flex:1;min-width:0;display:flex;gap:10px;align-items:center;font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden}
+.where .sec{color:var(--comp-ink);font-weight:800;text-transform:uppercase;letter-spacing:.09em;font-size:11.5px}
+.where .ttl{overflow:hidden;text-overflow:ellipsis}
+.tb{display:flex;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-size:14px;font-weight:700;transition:transform .25s var(--ease),border-color .25s}
+.chip:hover{transform:translateY(-1px);border-color:var(--ink-2)}
+.chip svg{width:16px;height:16px}
+.chip.dark{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--comp-soft);border-color:var(--comp);color:var(--comp-ink)}
+
+.stage{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(300px,1fr);min-height:0}
+.deck{position:relative;min-height:0;border-right:1px solid var(--line);background:var(--bg)}
+.scene-wrap{position:relative;min-height:0;overflow:hidden;background:#AEB3AE;transition:background 1.4s}
+#scene{position:absolute;inset:0;width:100%;height:100%;display:block}
+.scene-tag{position:absolute;left:16px;top:14px;display:flex;align-items:center;gap:10px;padding:8px 14px;border-radius:999px;background:rgba(255,255,255,.88);color:#17201C;font-size:13px;font-weight:700;box-shadow:0 6px 18px -8px rgba(0,0,0,.35)}
+.scene-tag .bar{width:90px;height:6px;border-radius:6px;background:#D9DDD8;overflow:hidden}
+.scene-tag .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#2F5D8A,#B5722A);transition:width 1s var(--ease)}
+.scene-tag .mono{font-family:var(--mono);font-size:12px;min-width:34px;text-align:right}
+
+.slide{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;visibility:hidden;opacity:0;transform:translateX(-14px);transition:opacity .45s var(--ease),transform .45s var(--ease),visibility 0s linear .45s;scrollbar-width:thin}
+.slide.active{visibility:visible;opacity:1;transform:none;transition:opacity .55s var(--ease) .05s,transform .65s var(--ease) .05s,visibility 0s}
+.inner{padding:clamp(22px,4vh,48px) clamp(16px,4vw,64px);min-height:100%;max-width:1000px;margin:0 auto;display:flex;flex-direction:column;justify-content:center;gap:clamp(18px,2.8vh,30px)}
+.slide.in .rv{animation:rise .7s var(--ease) both;animation-delay:calc(var(--i,0) * 70ms + 80ms)}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+
+.notes{border-top:1px solid var(--line);background:var(--surface);padding:12px clamp(16px,3vw,28px);display:flex;gap:14px;align-items:flex-start;max-height:26vh;overflow-y:auto;animation:fadein .3s}
+.notes .tag{flex:none;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;background:var(--comp-soft);color:var(--comp-ink);padding:4px 10px;border-radius:999px;margin-top:2px}
+.notes p{font-size:15px;color:var(--ink-2);max-width:100ch}
+
+.navbar{display:flex;align-items:center;gap:14px;padding:10px clamp(16px,3vw,28px) calc(10px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);background:var(--bg);z-index:20}
+.navbtn{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 16px;border-radius:12px;font-weight:800;font-size:14px;border:1px solid var(--line);background:var(--surface);transition:transform .25s var(--ease),opacity .25s}
+#nextBtn{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.navbtn:disabled{opacity:.35;cursor:default}
+.progress{flex:1;display:flex;gap:4px;min-width:0}
+.pseg{flex:var(--n) 1 0;height:30px;display:flex;flex-direction:column;justify-content:center;gap:5px;min-width:0}
+.pseg .bar{height:4px;border-radius:4px;background:var(--line);overflow:hidden;position:relative}
+.pseg .bar i{position:absolute;inset:0;background:var(--ink);transform-origin:left;transform:scaleX(var(--p,0));transition:transform .6s var(--ease)}
+.pseg.cur .bar i{background:var(--comp)}
+.pseg .lb{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left}
+.pseg.cur .lb{color:var(--ink);font-weight:800}
+.counter{font-family:var(--mono);font-size:13px;color:var(--muted);min-width:60px;text-align:center}
+
+.menu{position:fixed;inset:0;z-index:50;background:color-mix(in srgb,var(--bg) 70%,transparent);backdrop-filter:blur(14px);display:flex;justify-content:flex-end;animation:fadein .3s}
+.menu-panel{width:min(480px,100%);height:100%;background:var(--surface);border-left:1px solid var(--line);padding:calc(20px + env(safe-area-inset-top,0px)) 24px 24px;overflow-y:auto}
+.menu-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.menu-head h3{font-size:26px}
+.msec{border-top:1px solid var(--line);padding:12px 0}
+.msec h4{margin:0 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.mlink{display:flex;justify-content:space-between;width:100%;text-align:left;padding:9px 12px;border-radius:10px;font-size:15px}
+.mlink:hover{background:var(--surface-2)}
+.mlink.cur{background:var(--comp-soft);color:var(--comp-ink);font-weight:800}
+.mlink .num{font-family:var(--mono);font-size:12px;color:var(--muted)}
+
+/* ---------- atoms ---------- */
+.eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:.13em;color:var(--comp-ink)}
+.eyebrow::before{content:"";width:22px;height:2px;background:currentColor;border-radius:2px}
+.h-xl{font-size:clamp(44px,6vw,96px);font-weight:800;letter-spacing:-.04em;line-height:.95}
+.h-l{font-size:clamp(32px,3.8vw,56px);font-weight:800}
+.lead{font-size:clamp(18px,1.6vw,23px);color:var(--ink-2)}
+.small{font-size:16px;color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:clamp(16px,1.8vw,22px);box-shadow:var(--shadow);min-width:0}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.cta{display:inline-flex;align-items:center;gap:10px;height:54px;padding:0 24px;border-radius:999px;font-weight:800;font-size:17.5px;transition:transform .25s var(--ease)}
+.cta:hover{transform:translateY(-2px)}
+.cta.main{background:var(--ink);color:var(--bg)}
+.cta.ghost{border:1px solid var(--line);background:var(--surface)}
+.cta.sm{height:42px;font-size:14.5px;padding:0 16px}
+.ico{width:48px;height:48px;border-radius:12px;display:grid;place-items:center;flex:none;background:var(--surface-2);border:1px solid var(--line)}
+.ico.p{background:var(--part-soft);border-color:transparent;color:var(--part-ink)}
+.ico.c{background:var(--comp-soft);border-color:transparent;color:var(--comp-ink)}
+.pill{display:inline-flex;align-items:center;font-size:13.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:5px 11px;border-radius:999px;background:var(--surface-2);color:var(--ink-2);border:1px solid var(--line)}
+.pill.p{background:var(--part-soft);color:var(--part-ink);border-color:transparent}
+.pill.c{background:var(--comp-soft);color:var(--comp-ink);border-color:transparent}
+.seg{display:inline-flex;padding:4px;border-radius:999px;background:var(--surface);border:1px solid var(--line);gap:2px;align-self:flex-start}
+.seg button{padding:9px 18px;border-radius:999px;font-size:16px;font-weight:700;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.list{display:flex;flex-direction:column;gap:8px}
+.li{display:flex;gap:12px;align-items:center;padding:13px 16px;border-radius:14px;background:var(--surface-2);font-size:18.5px;font-weight:600}
+.li svg{width:18px;height:18px}
+.li.ok svg{color:var(--good)} .li.ko svg{color:var(--bad)}
+.boxhead{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.boxhead h3{font-size:26px}
+.dim{opacity:.25;filter:saturate(.3)} .fade-t{transition:opacity .35s,filter .35s}
+.keyline{font-family:var(--display);font-weight:800;font-size:clamp(22px,2.3vw,32px);letter-spacing:-.02em;line-height:1.15}
+.hint{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--muted)}
+.hint::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--comp)}
+
+.inner{font-size:18px}
+.result p{font-size:19px}
+/* portada */
+.team{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);padding-top:14px}
+.team .lbl{font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.team ul{display:flex;flex-wrap:wrap;gap:6px}
+.team li{font-size:16px;font-weight:700;padding:5px 11px;border-radius:999px;background:var(--surface);border:1px solid var(--line)}
+.h-xl .p,.h-xl .c{display:block}
+.h-xl .c{white-space:nowrap}
+
+/* pregunta */
+.question{font-size:clamp(34px,4.6vw,68px);font-weight:800;letter-spacing:-.035em;line-height:1.02}
+.word{font-family:var(--display);font-weight:800;font-size:clamp(26px,3vw,42px);letter-spacing:-.03em;padding:8px 18px;border-radius:16px}
+.word.p{background:var(--part-soft)} .word.c{background:var(--comp-soft)}
+.plus{font-family:var(--display);font-size:28px;font-weight:800;color:var(--muted)}
+.reveal[data-open="false"] .ans{display:none}
+.reveal[data-open="true"] .reveal-btn{display:none}
+.reveal[data-open="true"] .ans{animation:rise .6s var(--ease) both}
+
+/* comparativo */
+.vs{display:grid;grid-template-columns:150px repeat(2,minmax(0,1fr));border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--surface);box-shadow:var(--shadow);font-size:18px}
+.vs > div{padding:14px 16px;border-top:1px solid var(--line);min-width:0}
+.vs .hd{border-top:0;font-family:var(--display);font-weight:800;font-size:21px}
+.vs .rk{font-size:13px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);background:var(--surface-2)}
+.vs .hi{background:var(--part-soft)} .vs .hd.hi{color:var(--part-ink)}
+
+/* autores */
+.authors{display:flex;flex-direction:column;gap:10px}
+.author{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:start}
+.avatar{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:16px}
+.author h3{font-size:24px}
+.author .meta{font-size:15px;color:var(--muted)}
+.author q{display:block;margin-top:8px;font-family:var(--display);font-weight:700;font-size:21px;line-height:1.25;quotes:none;padding-left:12px;border-left:3px solid var(--comp)}
+
+/* verbos */
+.verbs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.verb{display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px 6px;border-radius:16px;border:1.5px solid var(--line);background:var(--surface);transition:border-color .25s,background .25s,transform .25s var(--ease);text-align:center}
+.verb:hover{transform:translateY(-2px)}
+.verb b{font-family:var(--display);font-size:19px;font-weight:800}
+.verb[aria-pressed="true"]{border-color:var(--part);background:var(--part-soft)}
+.verb[aria-pressed="true"] .ico{background:var(--part);color:var(--on-accent);border-color:transparent}
+.meter{display:flex;flex-direction:column;gap:8px}
+.track{height:12px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);overflow:hidden}
+.fill{height:100%;width:0;background:linear-gradient(90deg,var(--none),var(--part));transition:width .6s var(--ease)}
+.ml{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.state{font-family:var(--display);font-weight:800;font-size:26px}
+
+/* arnstein */
+.stairs{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px;align-items:end;height:240px}
+.step{border-radius:10px 10px 3px 3px;height:calc(var(--h) * 1%);display:flex;align-items:flex-start;justify-content:center;padding-top:8px;font-family:var(--display);font-weight:800;font-size:24px;transition:transform .3s var(--ease),box-shadow .3s}
+.step.g1{background:var(--none-soft);border:1px solid var(--line);color:var(--muted)}
+.step.g2{background:var(--comp-soft);color:var(--comp-ink)}
+.step.g3{background:var(--part-soft);color:var(--part-ink)}
+.step:hover{transform:translateY(-3px)}
+.step[aria-pressed="true"]{box-shadow:0 0 0 3px var(--ink);transform:translateY(-5px)}
+.slide.in .step{animation:grow .6s var(--ease) both;animation-delay:calc(var(--k) * 60ms + 200ms);transform-origin:bottom}
+@keyframes grow{from{opacity:0;transform:scaleY(.2)}to{opacity:1;transform:none}}
+.bands{display:grid;grid-template-columns:2fr 3fr 3fr;gap:5px;margin-top:6px}
+.bands div{font-size:13px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;text-align:center;padding-top:5px;border-top:3px solid}
+.bands .b1{border-color:var(--none);color:var(--muted)} .bands .b2{border-color:var(--comp);color:var(--comp-ink)} .bands .b3{border-color:var(--part);color:var(--part-ink)}
+.stepinfo{display:flex;flex-direction:column;gap:8px}
+.stepinfo .nm{display:flex;gap:12px;align-items:baseline}
+.stepinfo .n{font-family:var(--display);font-weight:800;font-size:56px;line-height:.9}
+.stepinfo h3{font-size:30px}
+.power{display:flex;gap:4px;margin-top:4px}
+.power i{flex:1;height:7px;border-radius:4px;background:var(--line);transition:background .3s}
+.power i.on{background:var(--ink)}
+
+/* pilares */
+.pillars{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+.pillar{border-radius:22px;padding:24px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.pillar.p{background:var(--part-soft)} .pillar.c{background:var(--comp-soft)}
+.pillar .big{font-family:var(--display);font-weight:800;font-size:clamp(28px,3vw,44px);letter-spacing:-.03em;line-height:1}
+.pillar.p .big{color:var(--part-ink)} .pillar.c .big{color:var(--comp-ink)}
+.pillar .q{font-weight:800;font-size:18px}
+.pillar .ex{font-size:17px;color:var(--ink-2);background:var(--surface);border-radius:12px;padding:10px 12px;margin-top:auto}
+
+/* componentes */
+.comps{display:flex;flex-direction:column;gap:8px}
+.comp{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:center;padding:11px 14px;border-radius:16px;background:var(--surface);border:1px solid var(--line)}
+.comp b{font-family:var(--display);font-size:22px;font-weight:800;display:block}
+.comp span{font-size:17.5px;color:var(--ink-2)}
+.comp em{font-style:normal;color:var(--muted);font-size:15px}
+
+/* analogía */
+.analog{display:flex;flex-direction:column;gap:10px}
+.analog .card{display:flex;gap:16px;align-items:center}
+.analog svg.art{width:104px;height:104px;flex:none}
+.analog h3{font-size:30px;margin-top:6px}
+.analog p{color:var(--ink-2);font-size:18.5px}
+.slide.in .wheel{animation:turn 1.3s var(--ease) both .3s;transform-origin:55px 55px}
+.slide.in .gear{animation:turn 1.3s var(--ease) both .5s;transform-origin:55px 55px}
+@keyframes turn{from{transform:rotate(-120deg)}to{transform:none}}
+
+/* escenarios */
+.switches{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sw{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 14px;border-radius:16px;border:1.5px solid var(--line);background:var(--surface);text-align:left;transition:border-color .25s,background .25s}
+.sw b{font-family:var(--display);font-size:22px;font-weight:800;display:block}
+.sw span{font-size:15px;color:var(--muted)}
+.tog{width:46px;height:26px;border-radius:999px;background:var(--line);position:relative;flex:none;transition:background .3s}
+.tog::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:var(--surface);box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .3s var(--ease)}
+.sw[aria-pressed="true"] .tog::after{transform:translateX(20px)}
+#swP[aria-pressed="true"]{border-color:var(--part);background:var(--part-soft)} #swP[aria-pressed="true"] .tog{background:var(--part)}
+#swC[aria-pressed="true"]{border-color:var(--comp);background:var(--comp-soft)} #swC[aria-pressed="true"] .tog{background:var(--comp)}
+.result{display:flex;flex-direction:column;gap:8px}
+.result .rt{font-family:var(--display);font-weight:800;font-size:32px;letter-spacing:-.02em}
+
+/* círculos */
+.circ{display:grid;grid-template-columns:260px minmax(0,1fr);gap:14px;align-items:center}
+.rings{width:100%;max-width:260px}
+.dot{transition:transform 1s var(--ease)}
+.legend{display:flex;flex-direction:column;gap:4px}
+.lg{display:flex;align-items:center;gap:12px;font-size:18px}
+.lg i{width:18px;height:18px;border-radius:50%;border:2px solid var(--line);flex:none}
+.lg b{font-weight:800}
+.lg .cnt{margin-left:auto;font-family:var(--mono);font-size:15px;color:var(--muted)}
+
+/* roles / caso / conclusiones */
+.roles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.role{display:flex;flex-direction:column;gap:8px}
+.role h3{font-size:23px}
+.role p{font-size:17.5px;color:var(--ink-2)}
+.case-hero{background:var(--ink);color:var(--bg);border-radius:20px;padding:18px 20px;display:flex;gap:18px;align-items:center}
+.year{font-family:var(--display);font-weight:800;font-size:clamp(56px,6vw,90px);letter-spacing:-.05em;line-height:.85;color:var(--comp)}
+.case-hero h3{font-size:26px}
+.case-hero p{opacity:.85;font-size:17.5px}
+.lesson{display:flex;gap:14px;align-items:flex-start;padding:14px 16px;border-radius:14px;background:var(--surface);border:1px solid var(--line);font-size:18px}
+.lesson b{display:block;font-size:13px;letter-spacing:.1em;text-transform:uppercase}
+.concl{display:flex;flex-direction:column;gap:8px;counter-reset:c}
+.concl li{display:flex;gap:16px;align-items:center;padding:15px 18px;border-radius:16px;background:var(--surface);border:1px solid var(--line);font-size:19.5px;counter-increment:c}
+.concl li::before{content:counter(c);font-family:var(--display);font-weight:800;font-size:30px;color:var(--comp);min-width:18px}
+.concl li:last-child{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.quote{font-size:clamp(34px,4.4vw,64px);font-weight:800;letter-spacing:-.035em;line-height:1.02}
+.refs li{font-size:16.5px;color:var(--ink-2);padding:8px 0 8px 24px;text-indent:-24px;border-top:1px solid var(--line)}
+.refs li:first-child{border-top:0}
+
+/* ---------- escena ---------- */
+#scene .paint{transition:fill 1.1s var(--ease),stroke 1.1s var(--ease)}
+#scene .grow{transform-box:fill-box;transform-origin:50% 100%;transition:transform 1s var(--ease),opacity .6s;transform:scale(0);opacity:0}
+#scene .grow.on{transform:scale(1);opacity:1}
+#scene .appear{transition:opacity .8s var(--ease),transform .8s var(--ease);opacity:0;transform:translateY(14px)}
+#scene .appear.on{opacity:1;transform:none}
+#scene .sun{transition:transform 1.6s var(--ease)}
+#sun{transition:fill 1.2s}
+#scene .glow{transition:opacity 1s}
+#scene stop{transition:stop-color 1.4s var(--ease)}
+
+#scene .bob{animation:bob 2.6s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:50% 100%}
+@keyframes bob{to{transform:translateY(-3px)}}
+#scene .sway{animation:sway 5s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:50% 100%}
+@keyframes sway{from{transform:rotate(-1.8deg)}to{transform:rotate(1.8deg)}}
+#scene .cloud{animation:drift linear infinite}
+@keyframes drift{from{transform:translateX(-300px)}to{transform:translateX(1300px)}}
+#scene .flyer{animation:fly 24s linear infinite}
+@keyframes fly{from{transform:translate(-160px,50px)}to{transform:translate(1200px,-40px)}}
+#scene .wing{animation:flap .45s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:50% 100%}
+@keyframes flap{to{transform:scaleY(.3)}}
+#scene .walker{animation:walk 18s ease-in-out infinite alternate}
+@keyframes walk{from{transform:translateX(0)}to{transform:translateX(var(--dx))}}
+#scene .flutter{animation:flutter 2.8s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:50% 0}
+@keyframes flutter{from{transform:rotate(-6deg)}to{transform:rotate(6deg)}}
+#scene .rays{animation:spin 50s linear infinite;transform-box:fill-box;transform-origin:center;transition:opacity 1.4s}
+@keyframes spin{to{transform:rotate(360deg)}}
+#scene .kite{animation:kite 3.6s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:50% 100%}
+@keyframes kite{from{transform:translate(0,0) rotate(-7deg)}to{transform:translate(16px,-12px) rotate(7deg)}}
+#scene .pulse{animation:pulse 2.2s ease-in-out infinite alternate}
+@keyframes pulse{from{opacity:.55}to{opacity:1}}
+#scene .cloudfill{transition:fill 1.4s}
+
+/* ---------- responsive ---------- */
+@media (max-width:900px){
+  .stage{grid-template-columns:1fr;grid-template-rows:28vh minmax(0,1fr)}
+  .scene-wrap{order:-1}
+  .deck{border-right:0;border-top:1px solid var(--line)}
+}
+@media (max-width:560px){
+  .where .ttl,.brand .txt,.chip .t,.progress .lb,.navbtn .t{display:none}
+  .verbs{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .pillars,.roles,.switches{grid-template-columns:1fr}
+  .circ{grid-template-columns:1fr}
+  .rings{justify-self:center}
+  .vs{grid-template-columns:90px repeat(2,minmax(0,1fr));font-size:15px}
+  .vs .hd{font-size:17px}
+  .scene-tag .bar{width:60px}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0ms!important;transition-duration:.01ms!important}}
+</style></head><body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="M5 12h14M13 5l7 7-7 7"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="M19 12H5M11 19l-7-7 7-7"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+  <symbol id="i-notes" viewBox="0 0 24 24"><path d="M5 3h10l4 4v14H5z"/><path d="M9 11h6M9 15h6"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-4 3-6 7-6s7 2 7 6"/><path d="M16 4a4 4 0 0 1 0 8M22 21c0-3-2-5-4-5.5"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-6.4A8 8 0 1 1 21 12z"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-checkc" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></symbol>
+  <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V16h8v-1.3A7 7 0 0 0 12 2z"/></symbol>
+  <symbol id="i-hammer" viewBox="0 0 24 24"><path d="m14 4 6 6-3 3-6-6z"/><path d="m11 7-8 8 3 3 8-8"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17.5v.01"/></symbol>
+  <symbol id="i-thumb" viewBox="0 0 24 24"><path d="M7 10v11H3V10z"/><path d="m7 10 4-8a3 3 0 0 1 3 3v4h6a2 2 0 0 1 2 2.3l-1.4 8A2 2 0 0 1 18.6 21H7"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M17 6l3 3M15 8l2 2"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></symbol>
+  <symbol id="i-house" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V21H3z"/><path d="M9 21v-6h6v6"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 21s-8-5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 6-8 11-8 11z"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-reset" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></symbol>
+</svg>
+
+<div class="app">
+  <header class="topbar">
+    <div class="brand"><span class="mark"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M3 20V11l5-4 5 4v9z" fill="#86AED6"/><path d="M12 20v-7l4.5-3.5L21 13v7z" fill="#DDA562"/></svg></span><span class="txt">El barrio</span></div>
+    <div class="where"><span class="sec" id="whereSec">Inicio</span><span class="ttl" id="whereTtl">Portada</span></div>
+    <div class="tb">
+      <button class="chip" id="notesBtn" aria-pressed="false" title="Guion de la diapositiva (tecla G)"><svg class="i"><use href="#i-notes"/></svg><span class="t">Guion</span></button>
+      <button class="chip" id="homeBtn"><svg class="i"><use href="#i-home"/></svg><span class="t">Inicio</span></button>
+      <button class="chip dark" id="menuBtn"><svg class="i"><use href="#i-grid"/></svg><span class="t">Menú</span></button>
+    </div>
+  </header>
+
+  <main class="stage">
+    <div class="deck" id="deck">
+
+<section class="slide" id="portada" data-sec="Inicio" data-title="Portada" data-notes="Saludo y presentación del grupo. Señalar el barrio: 'Así empieza nuestro barrio: gris, vacío, sin vida comunitaria. A medida que expliquemos qué son la participación y el compromiso, lo van a ver transformarse. Al final de la exposición estará lleno de color y de gente.'">
+  <div class="inner">
+    <span class="eyebrow rv" style="--i:0">Psicología comunitaria</span>
+    <h1 class="h-xl rv" style="--i:1"><span class="p">Participación</span><span class="c">y compromiso</span></h1>
+    <p class="lead rv" style="--i:2">Elementos indispensables para la transformación comunitaria. Mira el barrio: hoy está gris. Con cada idea de la exposición se va a ir transformando.</p>
+    <div class="row rv" style="--i:3"><button class="cta main" data-go="pregunta">Comenzar <svg class="i"><use href="#i-right"/></svg></button><button class="cta ghost" data-open-menu>Ver menú</button></div>
+    <div class="team rv" style="--i:4"><span class="lbl">Integrantes</span>
+      <ul><li>Carolina López López</li><li>Sofía Vásquez</li><li>Salomé Rendón</li><li>Manuela Chavarría Pérez</li><li>María Paulina Castro Pérez</li></ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="pregunta" data-sec="Inicio" data-title="Una pregunta" data-notes="Hacer la pregunta y esperar respuestas del público: '¿Conocen un proyecto de su barrio que empezó con fuerza y luego se acabó?'. Tocar 'Ver la respuesta': participación y compromiso. Esa es la tesis de toda la exposición. Fíjense que en el barrio ya aparecieron las primeras personas.">
+  <div class="inner">
+    <span class="eyebrow rv" style="--i:0">Para empezar</span>
+    <h2 class="question rv" style="--i:1">¿Por qué algunos barrios <span class="p">se transforman</span> y otros <span style="color:var(--muted)">siguen igual</span>?</h2>
+    <div class="reveal rv" style="--i:2" data-open="false" id="reveal">
+      <button class="cta main reveal-btn" id="revealBtn">Ver la respuesta <svg class="i"><use href="#i-right"/></svg></button>
+      <div class="ans"><div class="row"><span class="word p">Participación</span><span class="plus">+</span><span class="word c">Compromiso</span></div><p class="lead" style="margin-top:12px">Una le da rumbo al proceso; el otro lo mantiene vivo en el tiempo.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="transformacion" data-sec="Fundamentos" data-title="Transformación comunitaria" data-notes="Leer la definición. Contrastar con la asistencia: la asistencia resuelve un problema puntual desde afuera; la transformación deja a la comunidad más organizada y capaz de resolver sus propios problemas. Señalar el barrio: no basta con que alguien de afuera pinte las casas; la diferencia es lo que queda en la gente.">
+  <div class="inner">
+    <span class="eyebrow rv" style="--i:0">Marco conceptual</span>
+    <h2 class="h-l rv" style="--i:1">¿Qué es la transformación comunitaria?</h2>
+    <p class="lead rv" style="--i:2">Un proceso <b>planificado y sostenido</b> en el que una comunidad identifica sus problemas, moviliza sus propios recursos y genera <b>cambios duraderos</b> en su vida.</p>
+    <div class="vs rv" style="--i:3" role="table" aria-label="Asistencia frente a transformación">
+      <div class="hd"></div><div class="hd">Asistencia</div><div class="hd hi">Transformación</div>
+      <div class="rk">Quién actúa</div><div>Un agente externo</div><div class="hi">La comunidad, con apoyo</div>
+      <div class="rk">Qué deja</div><div>Una obra o servicio</div><div class="hi">Capacidad instalada</div>
+      <div class="rk">Ejemplo</div><div>Una entidad hace un parque y se va</div><div class="hi">La comunidad decide, construye y cuida su parque</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="autores" data-sec="Fundamentos" data-title="Bases teóricas" data-notes="Freire: el cambio real ocurre cuando las personas pasan de objetos a sujetos de su transformación (concientización). Fals Borda: la Investigación Acción Participativa, la comunidad investiga su realidad con el investigador. Montero: referente de la psicología comunitaria latinoamericana; habla de fortalecimiento y une participación y compromiso. Las frases son ideas resumidas, no citas textuales.">
+  <div class="inner">
+    <span class="eyebrow rv" style="--i:0">Bases teóricas</span>
+    <h2 class="h-l rv" style="--i:1">Tres voces latinoamericanas</h2>
+    <div class="authors">
+      <div class="card author rv" style="--i:2"><span class="avatar" style="background:var(--part-soft);color:var(--part-ink)">PF</span><div><h3>Paulo Freire</h3><span class="meta">Educador · Brasil · Concientización</span><q>La comunidad es sujeto, no objeto, de su transformación.</q></div></div>
+      <div class="card author rv" style="--i:3"><span class="avatar" style="background:var(--comp-soft);color:var(--comp-ink)">FB</span><div><h3>Orlando Fals Borda</h3><span class="meta">Sociólogo · Colombia · IAP</span><q>La comunidad investiga y transforma su propia realidad.</q></div></div>
+      <div class="card author rv" style="--i:4"><span class="avatar" style="background:var(--ink);color:var(--bg)">MM</span><div><h3>Maritza Montero</h3><span class="meta">Psicóloga · Venezuela · Fortalecimiento</span><q>Participar y comprometerse van juntos.</q></div></div>
+    </div>
+    <p class="small rv" style="--i:5">También: Arnstein (escalera de participación), Putnam (capital social), McMillan y Chavis (sentido de comunidad).</p>
+  </div>
+</section>
+
+<section class="slide" id="asistir" data-sec="Participación" data-title="Participar no es asistir" data-notes="Primer pilar. Montero describe la participación como un proceso organizado, colectivo, libre e incluyente, con distintos grados de compromiso. Asistir es el nivel mínimo. Tocar cada acción y ver cómo sube la barra: opinar, decidir, aportar, ejecutar y evaluar. Pregunta: '¿Cuántas veces fuimos a una reunión solo a firmar la lista?'">
+  <div class="inner">
+    <span class="eyebrow rv" style="--i:0">Primer pilar · Participación</span>
+    <h2 class="h-l rv" style="--i:1">Participar <span class="p">no es</span> lo mismo que asistir</h2>
+    <p class="lead rv" style="--i:2">Para Montero (2004) es un proceso <b>organizado, colectivo, libre e incluyente</b>. Toca cada acción.</p>
+    <div class="verbs rv" style="--i:3" id="verbs">
+      <button class="verb" aria-pressed="true"><span class="ico"><svg class="i"><use href="#i-chat"/></svg></span><b>Opinar</b></button>
+      <button class="verb" aria-pressed="false"><span class="ico"><svg class="i"><use href="#i-checkc"/></svg></span><b>Decidir</b></button>
+      <button class="verb" aria-pressed="false"><span class="ico"><svg class="i"><use href="#i-bulb"/></svg></span><b>Aportar</b></button>
+      <button class="verb" aria-pressed="false"><span class="ico"><svg class="i"><use href="#i-hammer"/></svg></span><b>Ejecutar</b></button>
+      <button class="verb" aria-pressed="false"><span class="ico"><svg class="i"><use href="#i-chart"/></svg></span><b>Evaluar</b></button>
+    </div>
+    <div class="card meter rv" style="--i:4">
+      <div class="ml"><span class="small">Nivel de participación</span><span class="state" id="meterState"></span></div>
+      <div class="track"><div class="fill" id="meterFill"></div></div>
+      <div class="ml"><span class="small">Solo asistir</span><span class="small">Participación plena</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="arnstein" data-sec="Participación" data-title="Escalera de Arnstein" data-notes="Tocar los escalones de abajo hacia arriba. No participación: manipulación y terapia. Simbólica: información, consulta y aplacamiento. Poder ciudadano: asociación, poder delegado y control ciudadano. Muchas veces se dice 'la comunidad participó' cuando solo fue informada o consultada; la transformación ocurre en los escalones de arriba.">
+  <div class="inner">
+    <span class="eyebrow rv" style="--i:0">Niveles de participación</span>
+    <h2 class="h-l rv" style="--i:1">La escalera de Arnstein (1969)</h2>
+    <p class="lead rv" style="--i:2">No toda participación es real. Cada escalón da más poder de decisión. Toca uno.</p>
+    <div class="rv" style="--i:3"><div class="stairs" id="stairs"></div><div class="bands"><div class="b1">No participación</div><div class="b2">Simbólica</div><div class="b3">Poder ciudadano</div></div></div>
+    <div class="card stepinfo rv" style="--i:4" aria-live="polite">
+      <span class="pill" id="stGroup" style="align-self:flex-start"></span>
+      <div class="nm"><span class="n" id="stN"></span><h3 id="stName"></h3></div>
+      <p id="stDesc" style="color:var(--ink-2)"></p>
+      <div><span class="small">Poder real de la comunidad</span><div class="power" id="stPower"></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="formas" data-sec="Participación" data-title="Formas y barreras" data-notes="Formas concretas en Colombia y América Latina: JAC, cabildos abiertos y audiencias, veedurías, presupuestos participativos y mingas, convites o mano cambiada. Barreras: falta de información, desconfianza, exclusión de grupos marginados y fatiga participativa: cansarse de opinar sin ver cambios.">
+  <div class="inner">
+    <span class="eyebrow rv" style="--i:0">En la práctica</span>
+    <h2 class="h-l rv" style="--i:1">Cómo se participa y qué lo impide</h2>
+    <div class="seg rv" style="--i:2" data-filter><button aria-pressed="true" data-v="all">Ambas</button><button aria-pressed="false" data-v="a">Formas</button><button aria-pressed="false" data-v="b">Barreras</button></div>
+    <div class="card fade-t rv" style="--i:3" data-k="a">
+      <div class="boxhead"><span class="ico p"><svg class="i"><use href="#i-users"/></svg></span><h3>Formas de participar</h3></div>
+      <ul class="list"><li class="li ok"><svg class="i"><use href="#i-check"/></svg>Juntas de Acción Comunal (JAC)</li><li class="li ok"><svg class="i"><use href="#i-check"/></svg>Cabildos abiertos y veedurías</li><li class="li ok"><svg class="i"><use href="#i-check"/></svg>Presupuestos participativos</li><li class="li ok"><svg class="i"><use href="#i-check"/></svg>Mingas, convites y mano cambiada</li></ul>
+    </div>
+    <div class="card fade-t rv" style="--i:4" data-k="b">
+      <div class="boxhead"><span class="ico c"><svg class="i"><use href="#i-alert"/></svg></span><h3>Barreras</h3></div>
+      <ul class="list"><li class="li ko"><svg class="i"><use href="#i-alert"/></svg>Falta de información clara</li><li class="li ko"><svg class="i"><use href="#i-alert"/></svg>Desconfianza en instituciones y líderes</li><li class="li ko"><svg class="i"><use href="#i-alert"/></svg>Exclusión de mujeres, jóvenes y grupos étnicos</li><li class="li ko"><svg class="i"><use href="#i-alert"/></svg>Fatiga participativa</li></ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="diferencia" data-sec="Compromiso" data-title="Participar vs. comprometerse" data-notes="Segundo pilar. El compromiso es la disposición sostenida y responsable de cumplir acuerdos, asumir tareas y sostener el proceso más allá del entusiasmo inicial. Participar es estar y decidir; comprometerse es sostener y cumplir. Se puede participar sin comprometerse, y estar comprometido sin espacios para decidir.">
+  <div class="inner">
+    <span class="eyebrow rv" style="--i:0">Segundo pilar · Compromiso</span>
+    <h2 class="h-l rv" style="--i:1">Dos pilares distintos</h2>
+    <p class="lead rv" style="--i:2">El compromiso es la <b>disposición sostenida y responsable</b> de cumplir acuerdos, asumir tareas y sostener el proceso más allá del entusiasmo inicial.</p>
+    <div class="pillars">
+      <div class="pillar p rv" style="--i:3"><span class="pill p" style="align-self:flex-start">Participación</span><span class="big">Estar y decidir</span><span class="q">¿Quién decide y actúa?</span><p class="ex"><b>Ej.:</b> ir a la asamblea y votar por el parque.</p></div>
+      <div class="pillar c rv" style="--i:4"><span class="pill c" style="align-self:flex-start">Compromiso</span><span class="big">Sostener y cumplir</span><span class="q">¿Quién sostiene y cumple?</span><p class="ex"><b>Ej.:</b> seguir cuidando el parque dos años después.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="componentes" data-sec="Compromiso" data-title="Componentes del compromiso" data-notes="Sentido de pertenencia (sentido de comunidad, McMillan y Chavis). Corresponsabilidad. Confianza mutua, centro del capital social de Putnam. Cumplir acuerdos aun sin supervisión. Continuidad en el tiempo, lo que más distingue al compromiso. Señalar el barrio: ya aparecen la huerta y los árboles que alguien está cuidando.">
+  <div class="inner">
+    <span class="eyebrow rv" style="--i:0">Compromiso</span>
+    <h2 class="h-l rv" style="--i:1">Sus cinco componentes</h2>
+    <div class="comps">
+      <div class="comp rv" style="--i:2"><span class="ico c"><svg class="i"><use href="#i-house"/></svg></span><div><b>Sentido de pertenencia</b><span>Sentir que el barrio es propio. <em>McMillan y Chavis</em></span></div></div>
+      <div class="comp rv" style="--i:3"><span class="ico c"><svg class="i"><use href="#i-users"/></svg></span><div><b>Corresponsabilidad</b><span>Los resultados dependen de todos.</span></div></div>
+      <div class="comp rv" style="--i:4"><span class="ico c"><svg class="i"><use href="#i-link"/></svg></span><div><b>Confianza mutua</b><span>Los demás cumplirán su parte. <em>Capital social, Putnam</em></span></div></div>
+      <div class="comp rv" style="--i:5"><span class="ico c"><svg class="i"><use href="#i-checkc"/></svg></span><div><b>Cumplir acuerdos</b><span>Honrar lo pactado, aun sin supervisión.</span></div></div>
+      <div class="comp rv" style="--i:6"><span class="ico c"><svg class="i"><use href="#i-clock"/></svg></span><div><b>Continuidad</b><span>Sostener el proceso meses o años.</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="fortalece" data-sec="Compromiso" data-title="Qué lo fortalece y debilita" data-notes="Lo fortalece: liderazgo reconocido, resultados visibles pronto, comunicación clara y reconocer el esfuerzo. Lo debilita: depender de un solo líder, promesas incumplidas del Estado o las ONG, esperar años sin cambios y la falta de relevo generacional.">
+  <div class="inner">
+    <span class="eyebrow rv" style="--i:0">Compromiso</span>
+    <h2 class="h-l rv" style="--i:1">Lo que lo fortalece y lo que lo debilita</h2>
+    <div class="seg rv" style="--i:2" data-filter><button aria-pressed="true" data-v="all">Ambas</button><button aria-pressed="false" data-v="a">Fortalece</button><button aria-pressed="false" data-v="b">Debilita</button></div>
+    <div class="card fade-t rv" style="--i:3" data-k="a"><div class="boxhead"><span class="ico" style="color:var(--good)"><svg class="i"><use href="#i-thumb"/></svg></span><h3>Lo fortalece</h3></div>
+      <ul class="list"><li class="li ok"><svg class="i"><use href="#i-check"/></svg>Liderazgo legítimo, no impuesto</li><li class="li ok"><svg class="i"><use href="#i-check"/></svg>Resultados visibles a corto plazo</li><li class="li ok"><svg class="i"><use href="#i-check"/></svg>Comunicación horizontal y clara</li><li class="li ok"><svg class="i"><use href="#i-check"/></svg>Reconocer el esfuerzo</li></ul></div>
+    <div class="card fade-t rv" style="--i:4" data-k="b"><div class="boxhead"><span class="ico" style="color:var(--bad)"><svg class="i"><use href="#i-alert"/></svg></span><h3>Lo debilita</h3></div>
+      <ul class="list"><li class="li ko"><svg class="i"><use href="#i-alert"/></svg>Depender de un solo líder</li><li class="li ko"><svg class="i"><use href="#i-alert"/></svg>Promesas incumplidas</li><li class="li ko"><svg class="i"><use href="#i-alert"/></svg>Años sin ver cambios</li><li class="li ko"><svg class="i"><use href="#i-alert"/></svg>Falta de relevo generacional</li></ul></div>
+  </div>
+</section>
+
+<section class="slide" id="analogia" data-sec="Juntos" data-title="El volante y el motor" data-notes="Argumento central. La participación es el volante: decide hacia dónde va la comunidad. El compromiso es el motor: hace que el proceso avance y no se detenga. Un carro necesita las dos cosas; una comunidad también.">
+  <div class="inner">
+    <span class="eyebrow rv" style="--i:0">¿Por qué juntos?</span>
+    <h2 class="h-l rv" style="--i:1">Un carro necesita volante y motor</h2>
+    <div class="analog">
+      <div class="card rv" style="--i:2"><svg class="art" viewBox="0 0 110 110" aria-hidden="true"><g class="wheel"><circle cx="55" cy="55" r="44" fill="none" stroke="var(--part)" stroke-width="10"/><circle cx="55" cy="55" r="12" fill="var(--part)"/><path d="M14 55h82M55 55v44" stroke="var(--part)" stroke-width="9" stroke-linecap="round"/></g></svg><div><span class="pill p">Participación</span><h3>Es el volante</h3><p>Decide hacia dónde vamos.</p></div></div>
+      <div class="card rv" style="--i:3"><svg class="art" viewBox="0 0 110 110" aria-hidden="true"><g class="gear"><path fill="var(--comp)" d="M49 8h12l2 12 9 4 10-7 8 8-7 10 4 9 12 2v12l-12 2-4 9 7 10-8 8-10-7-9 4-2 12H49l-2-12-9-4-10 7-8-8 7-10-4-9-12-2V49l12-2 4-9-7-10 8-8 10 7 9-4z"/><circle cx="55" cy="55" r="16" fill="var(--surface)"/></g></svg><div><span class="pill c">Compromiso</span><h3>Es el motor</h3><p>Hace que avancemos sin detenernos.</p></div></div>
+    </div>
+    <p class="keyline rv" style="--i:4">Sin volante, avanzamos sin rumbo. <span class="c">Sin motor, no llegamos a ninguna parte.</span></p>
+  </div>
+</section>
+
+<section class="slide" id="escenarios" data-sec="Juntos" data-title="Prueba en el barrio" data-notes="El momento más fuerte: usar los interruptores y mirar el barrio. Solo participación: hay gente, pero el barrio se despinta porque nadie lo sostiene (dependencia externa). Solo compromiso: el barrio se mantiene a medias, pero casi no hay gente; unos pocos cargan con todo y se agotan. Los dos: el barrio se llena de color y de gente. Sin ninguno: vuelve a ser gris. Dejar los dos encendidos al terminar.">
+  <div class="inner">
+    <span class="eyebrow rv" style="--i:0">¿Por qué juntos?</span>
+    <h2 class="h-l rv" style="--i:1">Pruébalo en el barrio</h2>
+    <p class="lead rv" style="--i:2">Apaga y enciende cada pilar y mira qué le pasa al barrio.</p>
+    <div class="switches rv" style="--i:3">
+      <button class="sw" id="swP" aria-pressed="true"><div><b class="p">Participación</b><span>La gente decide</span></div><span class="tog"></span></button>
+      <button class="sw" id="swC" aria-pressed="true"><div><b class="c">Compromiso</b><span>La gente sostiene</span></div><span class="tog"></span></button>
+    </div>
+    <div class="card result rv" style="--i:4" aria-live="polite">
+      <span class="pill" id="scBadge" style="align-self:flex-start"></span>
+      <span class="rt" id="scTitle"></span>
+      <p id="scDesc" style="color:var(--ink-2)"></p>
+      <p id="scRes" style="font-weight:800"></p>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="circulos" data-sec="Juntos" data-title="Círculos de Montero" data-notes="En una comunidad no todos participan igual: hay círculos con distintos grados de compromiso. Núcleo, participación frecuente, esporádica y periferia. Todos son valiosos. Tocar 'Invitar a acercarse': los círculos no son fijos; un buen proceso hace que la gente se acerque al centro y así no depende de unos pocos.">
+  <div class="inner">
+    <span class="eyebrow rv" style="--i:0">Maritza Montero</span>
+    <h2 class="h-l rv" style="--i:1">Círculos de participación y compromiso</h2>
+    <div class="circ rv" style="--i:2">
+      <svg class="rings" id="rings" viewBox="0 0 400 400" role="img" aria-label="Cuatro círculos concéntricos con personas"></svg>
+      <div class="legend" id="legend"></div>
+    </div>
+    <div class="card rv" style="--i:3;display:flex;flex-direction:column;gap:10px">
+      <p><b>Los círculos no son fijos.</b> Un buen proceso invita a acercarse y <b>amplía el núcleo</b>.</p>
+      <div class="row"><button class="cta main sm" id="moveBtn"><svg class="i"><use href="#i-plus"/></svg>Invitar a acercarse</button><button class="cta ghost sm" id="resetBtn"><svg class="i"><use href="#i-reset"/></svg>Reiniciar</button></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="psicologo" data-sec="Juntos" data-title="El papel del psicólogo" data-notes="Lo que nos toca como futuros psicólogos. Facilitar, no salvar: relación horizontal. Compromiso ético y político con la comunidad. Ayudar a que más personas se acerquen al núcleo. Y volverse innecesario: el mejor indicador de éxito es que la comunidad pueda seguir sola.">
+  <div class="inner">
+    <span class="eyebrow rv" style="--i:0">Psicología comunitaria</span>
+    <h2 class="h-l rv" style="--i:1">¿Y el psicólogo comunitario qué hace?</h2>
+    <div class="roles">
+      <div class="card role rv" style="--i:2"><span class="ico p"><svg class="i"><use href="#i-users"/></svg></span><h3>Facilita, no salva</h3><p>Relación horizontal: el saber de la comunidad vale tanto como el académico.</p></div>
+      <div class="card role rv" style="--i:3"><span class="ico c"><svg class="i"><use href="#i-heart"/></svg></span><h3>Se compromete</h3><p>Su compromiso es ético y político, no solo técnico.</p></div>
+      <div class="card role rv" style="--i:4"><span class="ico p"><svg class="i"><use href="#i-target"/></svg></span><h3>Amplía el núcleo</h3><p>Ayuda a que más personas pasen de la periferia al centro.</p></div>
+      <div class="card role rv" style="--i:5"><span class="ico c"><svg class="i"><use href="#i-key"/></svg></span><h3>Busca volverse innecesario</h3><p>Deja capacidad instalada para que la comunidad siga sola.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="caso" data-sec="Caso y cierre" data-title="Caso: presupuesto participativo" data-notes="Porto Alegre, desde 1989: los ciudadanos, en asambleas por barrios, deciden en qué se invierte parte del presupuesto. Participación: decidían. Compromiso: asambleas cada año y seguimiento a las obras. Lección: con los cambios de gobierno perdió fuerza; sin apropiación comunitaria el proceso es frágil. En Colombia: Medellín. Verificar datos antes de presentar.">
+  <div class="inner">
+    <span class="eyebrow rv" style="--i:0">Caso de estudio</span>
+    <h2 class="h-l rv" style="--i:1">Presupuesto participativo</h2>
+    <div class="case-hero rv" style="--i:2"><span class="year">1989</span><div><h3>Porto Alegre, Brasil</h3><p>La ciudadanía decide en qué se invierte parte del presupuesto municipal. Caso pionero en el mundo.</p></div></div>
+    <div class="list">
+      <div class="lesson rv" style="--i:3"><span class="ico p"><svg class="i"><use href="#i-users"/></svg></span><div><b class="p">Participación</b>La comunidad no solo opinaba: decidía.</div></div>
+      <div class="lesson rv" style="--i:4"><span class="ico c"><svg class="i"><use href="#i-clock"/></svg></span><div><b class="c">Compromiso</b>Asambleas cada año y seguimiento a las obras.</div></div>
+      <div class="lesson rv" style="--i:5"><span class="ico"><svg class="i"><use href="#i-alert"/></svg></span><div><b>Lección</b>Con los cambios de gobierno perdió fuerza: sin apropiación, el proceso es frágil.</div></div>
+      <div class="lesson rv" style="--i:6"><span class="ico"><svg class="i"><use href="#i-globe"/></svg></span><div><b>En Colombia</b>Planeación Local y Presupuesto Participativo de Medellín.</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="conclusiones" data-sec="Caso y cierre" data-title="Conclusiones" data-notes="Leer despacio; son el resumen de la exposición. En la última, conectar con nuestro rol como psicólogos: acompañar, no controlar.">
+  <div class="inner">
+    <span class="eyebrow rv" style="--i:0">Para llevarnos</span>
+    <h2 class="h-l rv" style="--i:1">Conclusiones</h2>
+    <ol class="concl">
+      <li class="rv" style="--i:2"><span>La transformación es <b>un proceso, no un evento</b>.</span></li>
+      <li class="rv" style="--i:3"><span>La <b class="p">participación da legitimidad</b>: las decisiones representan a la comunidad.</span></li>
+      <li class="rv" style="--i:4"><span>El <b class="c">compromiso da continuidad</b>: las decisiones se vuelven acciones.</span></li>
+      <li class="rv" style="--i:5"><span>Son <b>interdependientes</b>: uno sin el otro produce procesos frágiles.</span></li>
+      <li class="rv" style="--i:6"><span>Estado, ONG, academia y psicólogos deben <b>facilitar, no reemplazar</b>.</span></li>
+    </ol>
+  </div>
+</section>
+
+<section class="slide" id="cierre" data-sec="Caso y cierre" data-title="Cierre" data-notes="Señalar el barrio completo: 'Así empezó y así termina: el mismo barrio, transformado por su propia gente.' Leer la frase final, agradecer y abrir preguntas.">
+  <div class="inner">
+    <span class="eyebrow rv" style="--i:0">Para cerrar</span>
+    <h2 class="quote rv" style="--i:1">La participación le da <span class="p">rumbo</span>; el compromiso le da <span class="c">continuidad</span>.</h2>
+    <p class="lead rv" style="--i:2">Una comunidad que participa y se compromete no necesita que la transformen: se transforma a sí misma.</p>
+    <div class="row rv" style="--i:3"><span class="word p">¡Gracias!</span><span class="word c">¿Preguntas?</span></div>
+    <div class="team rv" style="--i:4"><ul><li>Carolina López López</li><li>Sofía Vásquez</li><li>Salomé Rendón</li><li>Manuela Chavarría Pérez</li><li>María Paulina Castro Pérez</li></ul></div>
+  </div>
+</section>
+
+<section class="slide" id="referencias" data-sec="Caso y cierre" data-title="Referencias" data-notes="Diapositiva de respaldo. Verificar año y editorial de las ediciones consultadas.">
+  <div class="inner">
+    <span class="eyebrow rv" style="--i:0">Fuentes</span>
+    <h2 class="h-l rv" style="--i:1">Referencias</h2>
+    <ul class="refs card rv" style="--i:2">
+      <li>Arnstein, S. R. (1969). A ladder of citizen participation. <i>Journal of the American Institute of Planners, 35</i>(4), 216–224.</li>
+      <li>Fals Borda, O. (1985). <i>Conocimiento y poder popular</i>. Siglo XXI.</li>
+      <li>Freire, P. (1970). <i>Pedagogía del oprimido</i>. Siglo XXI.</li>
+      <li>McMillan, D. W., y Chavis, D. M. (1986). Sense of community: A definition and theory. <i>Journal of Community Psychology, 14</i>(1), 6–23.</li>
+      <li>Montero, M. (2003). <i>Teoría y práctica de la psicología comunitaria</i>. Paidós.</li>
+      <li>Montero, M. (2004). <i>Introducción a la psicología comunitaria</i>. Paidós.</li>
+      <li>Putnam, R. D. (2000). <i>Bowling alone</i>. Simon &amp; Schuster.</li>
+    </ul>
+  </div>
+</section>
+
+    </div>
+    <div class="scene-wrap">
+      <svg id="scene" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Ilustración de un barrio que se va pintando y llenando de gente a medida que avanza la exposición">
+        <defs>
+          <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop id="sky1" offset="0" stop-color="#AEB3AE"/><stop id="sky2" offset="1" stop-color="#D3D6D1"/></linearGradient>
+          <radialGradient id="lampGlow"><stop offset="0" stop-color="#F6DFA8" stop-opacity=".9"/><stop offset="1" stop-color="#F6DFA8" stop-opacity="0"/></radialGradient>
+        </defs>
+        <rect width="1000" height="700" fill="url(#sky)"/>
+        <g class="sun" id="sunG"><g class="rays" id="rays" opacity="0"><rect x="797" y="92" width="6" height="22" rx="3" fill="#F2CF7E" transform="rotate(0 800 170)"/><rect x="797" y="92" width="6" height="22" rx="3" fill="#F2CF7E" transform="rotate(30 800 170)"/><rect x="797" y="92" width="6" height="22" rx="3" fill="#F2CF7E" transform="rotate(60 800 170)"/><rect x="797" y="92" width="6" height="22" rx="3" fill="#F2CF7E" transform="rotate(90 800 170)"/><rect x="797" y="92" width="6" height="22" rx="3" fill="#F2CF7E" transform="rotate(120 800 170)"/><rect x="797" y="92" width="6" height="22" rx="3" fill="#F2CF7E" transform="rotate(150 800 170)"/><rect x="797" y="92" width="6" height="22" rx="3" fill="#F2CF7E" transform="rotate(180 800 170)"/><rect x="797" y="92" width="6" height="22" rx="3" fill="#F2CF7E" transform="rotate(210 800 170)"/><rect x="797" y="92" width="6" height="22" rx="3" fill="#F2CF7E" transform="rotate(240 800 170)"/><rect x="797" y="92" width="6" height="22" rx="3" fill="#F2CF7E" transform="rotate(270 800 170)"/><rect x="797" y="92" width="6" height="22" rx="3" fill="#F2CF7E" transform="rotate(300 800 170)"/><rect x="797" y="92" width="6" height="22" rx="3" fill="#F2CF7E" transform="rotate(330 800 170)"/></g><circle id="sun" cx="800" cy="170" r="54" fill="#E4E2D8"/></g>
+        <g id="clouds"></g>
+        <path id="mount" class="paint" d="M0 430 L120 300 L240 390 L400 250 L560 380 L700 270 L860 360 L1000 290 L1000 700 L0 700Z" fill="#A4A9A4"/>
+        <path id="hill" class="paint" d="M0 470 Q 220 410 470 455 T 1000 430 L1000 700 L0 700Z" fill="#B3B8B2"/>
+        <g id="back"></g>
+        <rect id="ground" class="paint" x="0" y="598" width="1000" height="102" fill="#9FA49E"/>
+        <rect id="sidewalk" class="paint" x="0" y="590" width="1000" height="12" fill="#B8BCB6"/>
+        <g id="front"></g>
+        <g id="extras"></g>
+        <g id="peopleG"></g>
+      </svg>
+      <div class="scene-tag" aria-live="polite"><span>Transformación del barrio</span><span class="bar"><i id="tBar"></i></span><span class="mono" id="tPct">0%</span></div>
+    </div>
+  </main>
+
+  <div class="notes" id="notes" hidden><span class="tag">Guion</span><p id="notesText"></p></div>
+
+  <nav class="navbar">
+    <button class="navbtn" id="prevBtn"><svg class="i"><use href="#i-left"/></svg><span class="t">Anterior</span></button>
+    <div class="progress" id="progress"></div>
+    <span class="counter" id="counter">01 / 18</span>
+    <button class="navbtn" id="nextBtn"><span class="t">Siguiente</span><svg class="i"><use href="#i-right"/></svg></button>
+  </nav>
+</div>
+
+<div class="menu" id="menu" hidden>
+  <div class="menu-panel" role="dialog" aria-label="Contenido">
+    <div class="menu-head"><h3>Contenido</h3><button class="chip" id="closeMenu"><svg class="i"><use href="#i-x"/></svg>Cerrar</button></div>
+    <div id="menuList"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+  const NS='http://www.w3.org/2000/svg';
+  const mk=(tag,attrs,parent)=>{const e=document.createElementNS(NS,tag); for(const k in attrs)e.setAttribute(k,attrs[k]); if(parent)parent.appendChild(e); return e};
+  const GRAY={wall:'#BEC2BD',roof:'#959A94',win:'#868B85',door:'#8E938D'};
+  const items=[]; // {at, layer, set(on)}
+  const reg=(at,layer,set)=>items.push({at,layer,set,state:null});
+
+  /* ---------- casas ---------- */
+  function house(parent,x,base,w,h,wall,roof,at,opts={}){
+    const g=mk('g',{},parent);
+    const wallEl=mk('rect',{x,y:base-h,width:w,height:h,fill:GRAY.wall,class:'paint'},g);
+    const roofEl=mk('path',{d:`M${x-8} ${base-h+2} L${x+w/2} ${base-h-w*0.38} L${x+w+8} ${base-h+2}Z`,fill:GRAY.roof,class:'paint'},g);
+    const wins=[]; const cols=Math.max(1,Math.floor(w/42)); const rows=Math.max(1,Math.floor((h-30)/44));
+    for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){const ww=18,hh=20; const gx=x+(w-(cols*ww+(cols-1)*16))/2+c*(ww+16); const gy=base-h+16+r*42; if(gy+hh>base-34&&cols*rows>1&&r>0)continue; wins.push(mk('rect',{x:gx,y:gy,width:ww,height:hh,rx:2,fill:GRAY.win,class:'paint'},g))}
+    const door=mk('rect',{x:x+w/2-10,y:base-32,width:20,height:32,rx:2,fill:GRAY.door,class:'paint'},g);
+    let flowers=null;
+    if(opts.pots){flowers=mk('g',{class:'grow'},g); for(let i=0;i<3;i++){mk('rect',{x:x+6+i*14,y:base-10,width:10,height:10,fill:'#6B3F33'},flowers); mk('circle',{cx:x+11+i*14,cy:base-14,r:6,fill:['#C98C74','#D8B26E','#B66A50'][i]},flowers)}}
+    reg(at,'paint',on=>{wallEl.style.fill=on?wall:GRAY.wall; roofEl.style.fill=on?roof:GRAY.roof; door.style.fill=on?'#5B3A29':GRAY.door; wins.forEach(wn=>wn.style.fill=on?'#F3D9A0':GRAY.win); if(flowers)flowers.classList.toggle('on',on)});
+    return g;
+  }
+  const back=$('#back'), front=$('#front'), ex=$('#extras'), pg=$('#peopleG');
+  // fila de atrás, sobre la ladera
+  house(back,40,470,92,92,'#D8B26E','#6B3F33',.18);
+  house(back,150,462,104,118,'#8FA9B8','#5A4A42',.30);
+  house(back,272,468,86,84,'#C98C74','#6B3F33',.42);
+  house(back,600,456,96,112,'#A8B89A','#5A4A42',.24);
+  house(back,716,448,100,96,'#E2C9A6','#6B3F33',.48);
+  house(back,836,440,110,124,'#7E95A8','#5A4A42',.36);
+  // fila del frente
+  house(front,24,592,150,150,'#B66A50','#4E342C',.12,{pots:true});
+  const cc=house(front,198,592,170,128,'#4F7F86','#4E342C',.54);
+  house(front,660,592,140,140,'#CFA25E','#4E342C',.60,{pots:true});
+  house(front,820,592,160,170,'#9C5B4C','#4E342C',.66);
+
+  // letrero casa comunal + mural
+  const sign=mk('g',{class:'appear'},ex); mk('rect',{x:222,y:470,width:122,height:24,rx:4,fill:'#FFFFFF'},sign); const st=mk('text',{x:283,y:487,'text-anchor':'middle','font-family':'Nunito Sans, sans-serif','font-size':13,'font-weight':800,fill:'#1F4F49'},sign); st.textContent='CASA COMUNAL';
+  reg(.54,'paint',on=>sign.classList.toggle('on',on));
+  const mural=mk('g',{class:'appear'},ex); ['#D8B26E','#C98C74','#7E95A8','#A8B89A','#B66A50'].forEach((c,i)=>mk('circle',{cx:226+i*28,cy:540,r:11,fill:c},mural)); mk('path',{d:'M212 572 Q 280 548 352 572',stroke:'#FFFFFF','stroke-width':4,fill:'none'},mural);
+  reg(.72,'paint',on=>mural.classList.toggle('on',on));
+
+  // plaza: árboles, banca, faroles, huerta
+  function tree(x,base,s,at,col){const g=mk('g',{class:'grow'},ex); const w=mk('g',{class:'sway',style:`animation-delay:${-x%5}s`},g); mk('rect',{x:x-5*s,y:base-46*s,width:10*s,height:46*s,fill:'#6B4E3A'},w); mk('circle',{cx:x,cy:base-62*s,r:30*s,fill:col},w); mk('circle',{cx:x-20*s,cy:base-48*s,r:20*s,fill:col},w); mk('circle',{cx:x+20*s,cy:base-50*s,r:22*s,fill:col},w); reg(at,'paint',on=>g.classList.toggle('on',on)); return g}
+  tree(400,594,1.05,.15,'#5E8C6A'); tree(626,594,1.15,.39,'#4F7A5C'); tree(120,470,.7,.27,'#6E9A78'); tree(580,456,.65,.45,'#5E8C6A'); tree(980,440,.7,.57,'#6E9A78');
+  const bench=mk('g',{class:'appear'},ex); mk('rect',{x:470,y:568,width:80,height:8,rx:2,fill:'#7A5A44'},bench); mk('rect',{x:476,y:576,width:6,height:16,fill:'#5B3A29'},bench); mk('rect',{x:538,y:576,width:6,height:16,fill:'#5B3A29'},bench);
+  reg(.33,'paint',on=>bench.classList.toggle('on',on));
+  function lamp(x,at){const g=mk('g',{},ex); const glow=mk('g',{class:'glow',opacity:0},g); mk('circle',{cx:x,cy:500,r:46,fill:'url(#lampGlow)',class:'pulse'},glow); mk('rect',{x:x-3,y:500,width:6,height:92,fill:'#4A4F4B'},g); const bulb=mk('circle',{cx:x,cy:498,r:9,fill:'#9DA19C',class:'paint'},g); reg(at,'paint',on=>{glow.style.opacity=on?1:0; bulb.style.fill=on?'#F3D9A0':'#9DA19C'})}
+  lamp(448,.51); lamp(588,.63);
+  const huerta=mk('g',{class:'grow'},ex); for(let i=0;i<6;i++){mk('ellipse',{cx:62+i*20,cy:618,rx:8,ry:10,fill:'#6E9A78'},huerta); mk('ellipse',{cx:62+i*20,cy:640,rx:8,ry:10,fill:'#5E8C6A'},huerta)} mk('rect',{x:46,y:628,width:128,height:4,fill:'#6B4E3A'},huerta);
+  reg(.57,'paint',on=>huerta.classList.toggle('on',on));
+  // paso de cebra
+  const zebra=mk('g',{class:'appear'},ex); for(let i=0;i<6;i++)mk('rect',{x:450+i*20,y:640,width:12,height:46,fill:'#EDEDE6'},zebra);
+  reg(.21,'paint',on=>zebra.classList.toggle('on',on));
+  // banderines
+  const bunt=mk('g',{class:'appear'},ex); mk('path',{d:'M360 470 Q 510 520 660 470',stroke:'#4A4F4B','stroke-width':2,fill:'none'},bunt);
+  const bc=['#B66A50','#D8B26E','#4F7F86','#C98C74','#7E95A8','#A8B89A','#CFA25E','#9C5B4C','#8FA9B8'];
+  for(let i=0;i<9;i++){const t=(i+.5)/9; const x=360+300*t; const y=470+2*(1-t)*t*50*2*.5+ (4*t*(1-t))*25; mk('path',{d:`M${x-9} ${y} L${x+9} ${y} L${x} ${y+18}Z`,fill:bc[i],class:'flutter',style:`animation-delay:${-i*.37}s`},bunt)}
+  reg(.84,'paint',on=>bunt.classList.toggle('on',on));
+  // pájaros
+  const birds=mk('g',{class:'appear'},ex); const fl=mk('g',{class:'flyer'},birds); [[40,150],[80,128],[112,160],[70,176]].forEach(([x,y],k)=>mk('path',{d:`M${x-12} ${y} q6 -8 12 0 q6 -8 12 0`,stroke:'#2E3A48','stroke-width':3,fill:'none','stroke-linecap':'round',class:'wing',style:`animation-delay:${-k*.15}s`},fl));
+  reg(.62,'paint',on=>birds.classList.toggle('on',on));
+  // cometa sobre la ladera
+  const kite=mk('g',{class:'appear'},mk('g',{transform:'translate(-340,10)'},ex)); const kk=mk('g',{class:'kite'},kite); mk('path',{d:'M880 200 L900 228 L880 262 L860 228Z',fill:'#B5722A'},kk); mk('path',{d:'M880 200 L880 262 M860 228 L900 228',stroke:'#F6EBDD','stroke-width':2},kk); mk('path',{d:'M880 262 q-8 14 0 26 q8 14 0 28',stroke:'#2F5D8A','stroke-width':2.5,fill:'none'},kk); mk('path',{d:'M880 262 L905 440',stroke:'#4A4F4B','stroke-width':1,opacity:.6},kite);
+  reg(.88,'paint',on=>kite.classList.toggle('on',on));
+  // nubes que pasan
+  const cg=$('#clouds'); [[110,58,1,0],[220,40,.8,-22],[150,74,1.2,-40],[80,46,.7,-55]].forEach(([y,dur,sc,del])=>{const c=mk('g',{class:'cloud',style:`animation-duration:${dur*1.6}s;animation-delay:${del}s`},cg); [[0,0,46,22],[34,-12,34,22],[-30,-6,30,18],[60,4,28,16]].forEach(([dx,dy,rx,ry])=>mk('ellipse',{cx:dx*sc,cy:y+dy*sc,rx:rx*sc,ry:ry*sc,class:'cloudfill',fill:'#C4C8C3'},c))});
+
+  /* ---------- personas ---------- */
+  const shirts=['#2F5D8A','#B5722A','#4F7F86','#C98C74','#7E95A8','#CFA25E','#9C5B4C','#5E8C6A','#6B5B8A'];
+  const skins=['#8D5A3B','#C68B5E','#E0B08A','#6B4329','#B97A50'];
+  function person(x,y,s,i,at,dx){
+    const o=mk('g',{class:'appear'},pg); let g=o;
+    if(dx){g=mk('g',{class:'walker',style:`--dx:${dx}px;animation-delay:${-i*2.3}s`},g)}
+    g=mk('g',{class:'bob',style:`animation-delay:${-(i*0.43)%2.6}s;animation-duration:${dx?0.45:2.6}s`},g);
+    mk('rect',{x:x-7*s,y:y-26*s,width:14*s,height:20*s,rx:6*s,fill:shirts[i%shirts.length]},g);
+    mk('rect',{x:x-6*s,y:y-8*s,width:5*s,height:9*s,fill:'#2B3442'},g); mk('rect',{x:x+1*s,y:y-8*s,width:5*s,height:9*s,fill:'#2B3442'},g);
+    mk('circle',{cx:x,cy:y-33*s,r:7*s,fill:skins[i%skins.length]},g);
+    reg(at,'people',on=>o.classList.toggle('on',on));
+  }
+  // asamblea en la plaza (círculo)
+  const ring=[[470,600],[492,610],[520,612],[548,606],[566,596],[456,588],[580,584]];
+  ring.forEach((p,i)=>person(p[0],p[1],1,i,.05+i*.07));
+  // personas en la calle y ladera
+  [[300,600,1,7,.29],[338,600,1,8,.36],[700,600,1,1,.43],[760,600,1,3,.5],[150,598,1,5,.58],[880,600,1,6,.64],[640,672,1.15,2,.7],[240,676,1.15,4,.78],[100,680,1.15,0,.86],[780,684,1.15,8,.9]].forEach(p=>person(p[0],p[1],p[2],p[3],p[4]));
+  // vecinos caminando por la acera
+  person(60,596,.95,1,.22,240); person(940,596,.95,6,.47,-260); person(620,684,1.1,3,.69,-300);
+  // jóvenes pintando el mural
+  person(205,600,1,4,.74); person(360,600,1,3,.76);
+
+  /* ---------- cielo, sol, colinas ---------- */
+  const lerp=(a,b,t)=>{const pa=[1,3,5].map(i=>parseInt(a.substr(i,2),16)),pb=[1,3,5].map(i=>parseInt(b.substr(i,2),16)); return '#'+pa.map((v,k)=>Math.round(v+(pb[k]-v)*t).toString(16).padStart(2,'0')).join('')};
+  function env(p){
+    $('#sky1').setAttribute('stop-color',lerp('#AEB3AE','#8FB3CF',p));
+    $('#sky2').setAttribute('stop-color',lerp('#D3D6D1','#F1E4CF',p));
+    $('#sun').style.fill=lerp('#E4E2D8','#F2C46B',p);
+    $('#sunG').style.transform=`translateY(${(1-p)*150}px)`;
+    $('#rays').style.opacity=p>.35?Math.min(1,(p-.35)*2):0;
+    $('#mount').style.fill=lerp('#A4A9A4','#8197A3',p);
+    $('#hill').style.fill=lerp('#B3B8B2','#A3B796',p);
+    $('#ground').style.fill=lerp('#9FA49E','#4A525C',p);
+    $('#sidewalk').style.fill=lerp('#B8BCB6','#D6CCBC',p);
+    $$('#clouds .cloudfill').forEach(c=>c.style.fill=lerp('#C4C8C3','#FBFAF7',p));
+    $('.scene-wrap').style.background=lerp('#AEB3AE','#8FB3CF',p);
+  }
+  let shown={paint:0,people:0};
+  function setScene(paint,people){
+    shown={paint,people};
+    // escalona la aparición para que se vea "pintar"
+    const changes=items.filter(it=>{const lv=it.layer==='paint'?paint:people; const on=lv>=it.at-1e-6; const ch=it.state!==on; it.next=on; return ch});
+    const step=Math.min(110,1600/Math.max(changes.length,1)); changes.sort((a,b)=>a.at-b.at).forEach((it,k)=>{setTimeout(()=>{it.set(it.next); it.state=it.next},k*step)});
+    env(Math.min(paint,1));
+    const pct=Math.round((paint*.6+people*.4)*100);
+    $('#tBar').style.width=pct+'%'; $('#tPct').textContent=pct+'%';
+  }
+
+  /* ---------- navegación ---------- */
+  const slides=$$('.slide'); let cur=0;
+  const secs=[]; slides.forEach((s,i)=>{let g=secs.find(x=>x.name===s.dataset.sec); if(!g){g={name:s.dataset.sec,items:[]};secs.push(g)} g.items.push(i)});
+  secs.forEach(g=>{const d=document.createElement('button'); d.className='pseg'; d.style.setProperty('--n',g.items.length); d.title=g.name; d.innerHTML=`<span class="lb">${g.name}</span><span class="bar"><i></i></span>`; d.onclick=()=>go(g.items[0]); g.el=d; $('#progress').appendChild(d)});
+  secs.forEach(g=>{const w=document.createElement('div'); w.className='msec'; w.innerHTML=`<h4>${g.name}</h4>`; g.items.forEach(i=>{const b=document.createElement('button'); b.className='mlink'; b.dataset.i=i; b.innerHTML=`<span>${slides[i].dataset.title}</span><span class="num">${String(i+1).padStart(2,'0')}</span>`; b.onclick=()=>{closeMenu();go(i)}; w.appendChild(b)}); $('#menuList').appendChild(w)});
+  const LAST_STORY=slides.findIndex(s=>s.id==='cierre');
+  function levelFor(i){return Math.min(1,i/LAST_STORY)}
+  function go(i){
+    i=Math.max(0,Math.min(slides.length-1,i));
+    slides[cur].classList.remove('active','in');
+    cur=i; const s=slides[i];
+    s.classList.remove('in'); void s.offsetWidth; s.classList.add('active','in'); s.scrollTop=0;
+    $('#whereSec').textContent=s.dataset.sec; $('#whereTtl').textContent=s.dataset.title;
+    $('#counter').textContent=String(i+1).padStart(2,'0')+' / '+slides.length;
+    $('#prevBtn').disabled=i===0; $('#nextBtn').disabled=i===slides.length-1;
+    secs.forEach(g=>{const a=g.items[0],b=g.items[g.items.length-1]; const p=i>b?1:i<a?0:(i-a+1)/g.items.length; g.el.querySelector('i').style.setProperty('--p',p); g.el.classList.toggle('cur',i>=a&&i<=b)});
+    $$('.mlink').forEach(m=>m.classList.toggle('cur',+m.dataset.i===i));
+    $('#notesText').textContent=s.dataset.notes||'';
+    try{history.replaceState(null,'','#'+s.id)}catch(e){}
+    if(s.id==='escenarios'){renderScenario()} else {const l=levelFor(i); setScene(l,l)}
+  }
+  $('#prevBtn').onclick=()=>go(cur-1); $('#nextBtn').onclick=()=>go(cur+1); $('#homeBtn').onclick=()=>go(0);
+  $$('[data-go]').forEach(b=>b.onclick=()=>go(slides.findIndex(s=>s.id===b.dataset.go)));
+  const menu=$('#menu'); const openMenu=()=>menu.hidden=false; const closeMenu=()=>menu.hidden=true;
+  $('#menuBtn').onclick=openMenu; $$('[data-open-menu]').forEach(b=>b.onclick=openMenu); $('#closeMenu').onclick=closeMenu;
+  menu.addEventListener('click',e=>{if(e.target===menu)closeMenu()});
+  const nb=$('#notesBtn'); function toggleNotes(){const on=nb.getAttribute('aria-pressed')!=='true'; nb.setAttribute('aria-pressed',on); $('#notes').hidden=!on} nb.onclick=toggleNotes;
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape'){closeMenu();return} if(!menu.hidden)return;
+    if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();go(cur+1)}
+    else if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();go(cur-1)}
+    else if(e.key==='Home')go(0); else if(e.key==='End')go(slides.length-1);
+    else if(e.key==='g'||e.key==='G')toggleNotes();
+  });
+  let tx=null,ty=null; const dk=$('#deck');
+  dk.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY},{passive:true});
+  dk.addEventListener('touchend',e=>{if(tx===null)return; const dx=e.changedTouches[0].clientX-tx,dy=e.changedTouches[0].clientY-ty; if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5)go(cur+(dx<0?1:-1)); tx=null},{passive:true});
+
+  /* ---------- interacciones ---------- */
+  $('#revealBtn').onclick=()=>$('#reveal').dataset.open='true';
+  $$('.seg[data-filter]').forEach(seg=>{const box=seg.closest('.inner'); seg.querySelectorAll('button').forEach(b=>b.onclick=()=>{seg.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b)); box.querySelectorAll('[data-k]').forEach(c=>c.classList.toggle('dim',b.dataset.v!=='all'&&c.dataset.k!==b.dataset.v))})});
+
+  const stLbl=['Solo asistir','Participación débil','Participación débil','Participación activa','Participación activa','Participación plena'];
+  function meter(){const n=$$('#verbs .verb[aria-pressed="true"]').length; $('#meterFill').style.width=n*20+'%'; $('#meterState').textContent=stLbl[n]}
+  $$('#verbs .verb').forEach(v=>v.onclick=()=>{v.setAttribute('aria-pressed',v.getAttribute('aria-pressed')!=='true'); meter()}); meter();
+
+  const steps=[['Manipulación','g1','No participación','Se usa a la comunidad como fachada para legitimar decisiones ya tomadas.'],['Terapia','g1','No participación','Se busca "corregir" a la gente sin escuchar lo que piensa.'],['Información','g2','Participación simbólica','Se avisa lo que ya se decidió. La comunicación va en una sola vía.'],['Consulta','g2','Participación simbólica','Se pregunta la opinión, pero no hay garantía de que se tenga en cuenta.'],['Aplacamiento','g2','Participación simbólica','Se incluye a algunos líderes en comités, pero el poder decide al final.'],['Asociación','g3','Poder ciudadano','La comunidad y las instituciones comparten las decisiones.'],['Poder delegado','g3','Poder ciudadano','La comunidad tiene la última palabra en ciertos temas.'],['Control ciudadano','g3','Poder ciudadano','La comunidad gestiona sus asuntos de forma autónoma.']];
+  steps.forEach((s,i)=>{const b=document.createElement('button'); b.className='step '+s[1]; b.style.setProperty('--h',24+i*10.8); b.style.setProperty('--k',i); b.title=s[0]; b.setAttribute('aria-label',`Escalón ${i+1}: ${s[0]}`); b.textContent=i+1; b.onclick=()=>pick(i); $('#stairs').appendChild(b)});
+  for(let i=0;i<8;i++)$('#stPower').appendChild(document.createElement('i'));
+  function pick(i){$$('.step').forEach((b,j)=>b.setAttribute('aria-pressed',j===i)); const s=steps[i]; $('#stN').textContent=i+1; $('#stName').textContent=s[0]; $('#stDesc').textContent=s[3]; const g=$('#stGroup'); g.textContent=s[2]; g.className='pill'+(s[1]==='g2'?' c':s[1]==='g3'?' p':''); $$('#stPower i').forEach((x,j)=>x.classList.toggle('on',j<=i))}
+  pick(3);
+
+  const SC={
+    '11':{b:'Escenario ideal',cls:'',t:'Participación + compromiso',d:'La gente decide y sostiene lo que decide. Cada logro anima a más vecinos.',r:'Resultado: apropiación, sostenibilidad y un barrio lleno de vida.',paint:1,people:1},
+    '10':{b:'Escenario 1',cls:' p',t:'Participación sin compromiso',d:'Hay asambleas llenas, pero nadie sostiene lo que se decidió. El barrio se despinta.',r:'Resultado: dependencia externa y "aquí nada funciona".',paint:.22,people:.9},
+    '01':{b:'Escenario 2',cls:' c',t:'Compromiso sin participación',d:'Unos pocos cargan con todo. Algo se mantiene, pero casi nadie decide ni acompaña.',r:'Resultado: líderes agotados y decisiones poco representativas.',paint:.5,people:.12},
+    '00':{b:'Sin pilares',cls:'',t:'No hay proceso',d:'Sin participación ni compromiso, el barrio depende de lo que hagan otros.',r:'Resultado: asistencia puntual, sin transformación.',paint:0,people:0}
+  };
+  function renderScenario(){const k=($('#swP').getAttribute('aria-pressed')==='true'?'1':'0')+($('#swC').getAttribute('aria-pressed')==='true'?'1':'0'); const s=SC[k]; $('#scBadge').textContent=s.b; $('#scBadge').className='pill'+s.cls; $('#scTitle').textContent=s.t; $('#scDesc').textContent=s.d; $('#scRes').textContent=s.r; if(slides[cur].id==='escenarios')setScene(s.paint,s.people)}
+  ['#swP','#swC'].forEach(id=>$(id).onclick=()=>{const b=$(id); b.setAttribute('aria-pressed',b.getAttribute('aria-pressed')!=='true'); renderScenario()});
+  renderScenario();
+
+  // círculos de Montero
+  const RN=[['Núcleo','organiza y lidera','var(--comp)'],['Frecuente','aporta y asume tareas','var(--comp-soft)'],['Esporádica','se suma a veces','var(--surface)'],['Periferia','apoya de vez en cuando','var(--surface-2)']];
+  const rs=$('#rings'),C=200;
+  [190,144,96,48].forEach((r,i)=>mk('circle',{cx:C,cy:C,r,fill:RN[3-i][2],stroke:'var(--line)','stroke-width':2},rs));
+  const dg=mk('g',{},rs); const START=[0,0,1,1,1,2,2,2,2,2,3,3,3,3,3,3,3,3]; let dots=[];
+  RN.forEach(r=>{const d=document.createElement('div'); d.className='lg'; d.innerHTML=`<i style="background:${r[2]}"></i><span><b>${r[0]}</b> · ${r[1]}</span><span class="cnt"></span>`; $('#legend').appendChild(d)});
+  function place(){const by=[0,1,2,3].map(r=>dots.filter(d=>d.ring===r)); by.forEach((arr,r)=>arr.forEach((d,j)=>{const a=j/Math.max(arr.length,1)*Math.PI*2+r*.6; const rad=[22,72,120,167][r]; d.el.style.transform=`translate(${C+Math.cos(a)*rad}px,${C+Math.sin(a)*rad}px)`})); $$('#legend .cnt').forEach((c,i)=>c.textContent=by[i].length)}
+  function build(){dg.innerHTML=''; dots=START.map(r=>{const g=mk('g',{class:'dot'},dg); mk('circle',{r:11,fill:r===0?'var(--ink)':'var(--part)',stroke:'var(--surface)','stroke-width':2.5},g); mk('circle',{cy:-3,r:3.4,fill:'var(--surface)'},g); mk('path',{d:'M-5.5 6.5a5.5 4.5 0 0 1 11 0z',fill:'var(--surface)'},g); return {ring:r,el:g}}); place()}
+  $('#moveBtn').onclick=()=>{const c=dots.filter(d=>d.ring>0); if(!c.length)return; const m=Math.max(...c.map(d=>d.ring)); const d=c.find(x=>x.ring===m); d.ring--; if(d.ring===0)d.el.querySelector('circle').setAttribute('fill','var(--ink)'); place()};
+  $('#resetBtn').onclick=build; build();
+
+  /* ---------- inicio ---------- */
+  items.forEach(it=>{it.set(false);it.state=false});
+  let start=0; const h=(location.hash||'').slice(1); if(h){const k=slides.findIndex(s=>s.id===h); if(k>=0)start=k}
+  go(start);
+})();
+</script>
+</body></html>
