@@ -256,7 +256,9 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke
 .role{display:flex;flex-direction:column;gap:8px}
 .role h3{font-size:23px}
 .role p{font-size:17.5px;color:var(--ink-2)}
-.case-hero{background:var(--ink);color:var(--bg);border-radius:20px;padding:18px 20px;display:flex;gap:18px;align-items:center}
+.case-hero{background:var(--ink);color:var(--bg);border-radius:20px;padding:18px 20px;display:flex;flex-wrap:wrap;column-gap:18px;row-gap:4px;align-items:center}
+.case-hero > div{flex:1;min-width:0}
+.case-hero .kick{flex-basis:100%;font-size:13px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--comp)}
 .year{font-family:var(--display);font-weight:800;font-size:clamp(56px,6vw,90px);letter-spacing:-.05em;line-height:.85;color:var(--comp)}
 .case-hero h3{font-size:26px}
 .case-hero p{opacity:.85;font-size:17.5px}
@@ -551,7 +553,21 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke
   </div>
 </section>
 
-<section class="slide" id="conclusiones" data-sec="Cierre" data-title="Conclusiones" data-notes="Leer despacio; son el resumen de la exposición. En la última, conectar con nuestro rol como psicólogos: acompañar, no controlar.">
+<section class="slide" id="caso" data-sec="Caso y cierre" data-title="Caso: presupuesto participativo" data-notes="Contexto: el presupuesto participativo nació en 1989 en Porto Alegre, Brasil. Allí, por primera vez, los ciudadanos empezaron a reunirse en asambleas por barrios para decidir en qué se invierte una parte del presupuesto de la ciudad. Por eso es el caso pionero en el mundo y luego se replicó en muchas ciudades. Participación: la comunidad no solo opinaba, decidía. Compromiso: asambleas cada año y seguimiento a las obras. Lección: con los cambios de gobierno perdió fuerza; si un proceso depende de la voluntad de quien gobierna y no de la apropiación de la comunidad, se vuelve frágil. En Colombia, Medellín tiene su programa de Planeación Local y Presupuesto Participativo (Acuerdo 43 de 2007).">
+  <div class="inner">
+    <span class="eyebrow rv" style="--i:0">Caso de estudio</span>
+    <h2 class="h-l rv" style="--i:1">Presupuesto participativo</h2>
+    <div class="case-hero rv" style="--i:2"><span class="kick">Inicios del presupuesto participativo</span><span class="year">1989</span><div><h3>Porto Alegre, Brasil</h3><p>Aquí nació: por primera vez, la ciudadanía se reunió en asambleas por barrios para decidir en qué se invierte parte del presupuesto de la ciudad. Luego se replicó en muchas ciudades del mundo.</p></div></div>
+    <div class="list">
+      <div class="lesson rv" style="--i:3"><span class="ico p"><svg class="i"><use href="#i-users"/></svg></span><div><b class="p">Participación</b>La comunidad no solo opinaba: decidía.</div></div>
+      <div class="lesson rv" style="--i:4"><span class="ico c"><svg class="i"><use href="#i-clock"/></svg></span><div><b class="c">Compromiso</b>Asambleas cada año y seguimiento a las obras.</div></div>
+      <div class="lesson rv" style="--i:5"><span class="ico"><svg class="i"><use href="#i-alert"/></svg></span><div><b>Lección</b>Con los cambios de gobierno perdió fuerza: sin apropiación, el proceso es frágil.</div></div>
+      <div class="lesson rv" style="--i:6"><span class="ico"><svg class="i"><use href="#i-globe"/></svg></span><div><b>En Colombia</b>Planeación Local y Presupuesto Participativo de Medellín.</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="conclusiones" data-sec="Caso y cierre" data-title="Conclusiones" data-notes="Leer despacio; son el resumen de la exposición. En la última, conectar con nuestro rol como psicólogos: acompañar, no controlar.">
   <div class="inner">
     <span class="eyebrow rv" style="--i:0">Para llevarnos</span>
     <h2 class="h-l rv" style="--i:1">Conclusiones</h2>
@@ -565,7 +581,7 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke
   </div>
 </section>
 
-<section class="slide" id="cierre" data-sec="Cierre" data-title="Cierre" data-notes="Señalar el barrio completo: 'Así empezó y así termina: el mismo barrio, transformado por su propia gente.' Leer la frase final, agradecer y abrir preguntas.">
+<section class="slide" id="cierre" data-sec="Caso y cierre" data-title="Cierre" data-notes="Señalar el barrio completo: 'Así empezó y así termina: el mismo barrio, transformado por su propia gente.' Leer la frase final, agradecer y abrir preguntas.">
   <div class="inner">
     <span class="eyebrow rv" style="--i:0">Para cerrar</span>
     <h2 class="quote rv" style="--i:1">La participación le da <span class="p">rumbo</span>; el compromiso le da <span class="c">continuidad</span>.</h2>
@@ -575,7 +591,7 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke
   </div>
 </section>
 
-<section class="slide" id="referencias" data-sec="Cierre" data-title="Referencias" data-notes="Diapositiva de respaldo. Verificar año y editorial de las ediciones consultadas.">
+<section class="slide" id="referencias" data-sec="Caso y cierre" data-title="Referencias" data-notes="Diapositiva de respaldo. Verificar año y editorial de las ediciones consultadas.">
   <div class="inner">
     <span class="eyebrow rv" style="--i:0">Fuentes</span>
     <h2 class="h-l rv" style="--i:1">Referencias</h2>
