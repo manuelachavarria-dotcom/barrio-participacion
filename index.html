@@ -370,20 +370,9 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke
     <span class="eyebrow rv" style="--i:0">Psicología comunitaria</span>
     <h1 class="h-xl rv" style="--i:1"><span class="p">Participación</span><span class="c">y compromiso</span></h1>
     <p class="lead rv" style="--i:2">Elementos indispensables para la transformación comunitaria. Mira el barrio: hoy está gris. Con cada idea de la exposición se va a ir transformando.</p>
-    <div class="row rv" style="--i:3"><button class="cta main" data-go="pregunta">Comenzar <svg class="i"><use href="#i-right"/></svg></button><button class="cta ghost" data-open-menu>Ver menú</button></div>
+    <div class="row rv" style="--i:3"><button class="cta main" data-go="transformacion">Comenzar <svg class="i"><use href="#i-right"/></svg></button><button class="cta ghost" data-open-menu>Ver menú</button></div>
     <div class="team rv" style="--i:4"><span class="lbl">Integrantes</span>
       <ul><li>Carolina López López</li><li>Sofía Vásquez</li><li>Salomé Rendón</li><li>Manuela Chavarría Pérez</li><li>María Paulina Castro Pérez</li></ul>
-    </div>
-  </div>
-</section>
-
-<section class="slide" id="pregunta" data-sec="Inicio" data-title="Una pregunta" data-notes="Hacer la pregunta y esperar respuestas del público: '¿Conocen un proyecto de su barrio que empezó con fuerza y luego se acabó?'. Tocar 'Ver la respuesta': participación y compromiso. Esa es la tesis de toda la exposición. Fíjense que en el barrio ya aparecieron las primeras personas.">
-  <div class="inner">
-    <span class="eyebrow rv" style="--i:0">Para empezar</span>
-    <h2 class="question rv" style="--i:1">¿Por qué algunos barrios <span class="p">se transforman</span> y otros <span style="color:var(--muted)">siguen igual</span>?</h2>
-    <div class="reveal rv" style="--i:2" data-open="false" id="reveal">
-      <button class="cta main reveal-btn" id="revealBtn">Ver la respuesta <svg class="i"><use href="#i-right"/></svg></button>
-      <div class="ans"><div class="row"><span class="word p">Participación</span><span class="plus">+</span><span class="word c">Compromiso</span></div><p class="lead" style="margin-top:12px">Una le da rumbo al proceso; el otro lo mantiene vivo en el tiempo.</p></div>
     </div>
   </div>
 </section>
@@ -811,7 +800,6 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke
   dk.addEventListener('touchend',e=>{if(tx===null)return; const dx=e.changedTouches[0].clientX-tx,dy=e.changedTouches[0].clientY-ty; if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5)go(cur+(dx<0?1:-1)); tx=null},{passive:true});
 
   /* ---------- interacciones ---------- */
-  $('#revealBtn').onclick=()=>$('#reveal').dataset.open='true';
   $$('.seg[data-filter]').forEach(seg=>{const box=seg.closest('.inner'); seg.querySelectorAll('button').forEach(b=>b.onclick=()=>{seg.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b)); box.querySelectorAll('[data-k]').forEach(c=>c.classList.toggle('dim',b.dataset.v!=='all'&&c.dataset.k!==b.dataset.v))})});
 
   const stLbl=['Solo asistir','Participación débil','Participación débil','Participación activa','Participación activa','Participación plena'];
